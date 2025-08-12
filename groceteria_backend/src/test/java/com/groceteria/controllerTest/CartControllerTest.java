@@ -1,4 +1,4 @@
-package com.groceryStore.controllerTest;
+package com.groceteria.controllerTest;
  
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -30,7 +30,7 @@ public class CartControllerTest {
     public void getAllCartsTest() throws Exception {
         when(cartService.getAllCarts()).thenReturn(List.of(new Cart()));
  
-        mockMvc.perform(get("/cart/list")
+        mockMvc.perform(get("/api/v1/cart")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }
@@ -40,31 +40,35 @@ public class CartControllerTest {
         long cartId = 1;
         when(cartService.getCartById(cartId)).thenReturn(new Cart());
  
-        mockMvc.perform(get("/cart/Cart/" + cartId)
+        mockMvc.perform(get("/api/v1/cart/" + cartId)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }
+    
     @Test
     public void addCartTest() throws Exception {
         long itemId = 1;
         Integer userId = 1;
         Cart cart = new Cart();
-        when(cartService.addCart(cart, itemId, userId)).thenReturn(cart);
+        when(cartService.addToCart(any(), itemId, userId)).thenReturn(cart);
  
-        mockMvc.perform(post("/cart/" + userId + "/" + itemId)
+        mockMvc.perform(post("/api/v1/cart")
+                .param("itemId", String.valueOf(itemId))
+                .param("userId", String.valueOf(userId))
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"key\": \"value\"}")) 
+                .content("{\"quantity\": 1}")) 
                 .andExpect(status().isCreated());
     }
+    
     @Test
     public void updateCartTest() throws Exception {
         long cartId = 1;
         Cart cart = new Cart();
-        when(cartService.updateCart(cart, cartId)).thenReturn(cart);
+        when(cartService.updateCart(any(), cartId)).thenReturn(cart);
  
-        mockMvc.perform(put("/cart/" + cartId)
+        mockMvc.perform(put("/api/v1/cart/" + cartId)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"key\": \"value\"}")) 
+                .content("{\"quantity\": 2}")) 
                 .andExpect(status().isOk());
     }
  
@@ -73,19 +77,22 @@ public class CartControllerTest {
         long cartId = 1;
         doNothing().when(cartService).deleteCart(cartId);
  
-        mockMvc.perform(delete("/cart/" + cartId)
+        mockMvc.perform(delete("/api/v1/cart/" + cartId)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }
+    
     @Test
-    public void deleteCartByQuantityTest() throws Exception {
+    public void updateCartQuantityTest() throws Exception {
         long cartId = 1;
-        long availableQuantity = 5;
-        doNothing().when(cartService).deleteCartByQuanity(cartId, availableQuantity);
+        long quantity = 5;
+        Cart cart = new Cart();
+        when(cartService.updateCartQuantity(cartId, quantity)).thenReturn(cart);
  
-        mockMvc.perform(delete("/cart/" + cartId + "/" + availableQuantity)
+        mockMvc.perform(put("/api/v1/cart/" + cartId + "/quantity")
+                .param("quantity", String.valueOf(quantity))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }
  
-}
+} 

@@ -20,7 +20,7 @@ export class AdminOrderlistComponent {
     private router: Router,
     private datePipe: DatePipe
   ){
-    this.gservice.isUserLoginPresent();
+    this.gservice.isAdminLoginPresent();
   }
 
   ngOnInit(): void{

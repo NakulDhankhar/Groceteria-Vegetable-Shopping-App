@@ -52,7 +52,7 @@ export class AdminAdditemComponent {
   }
 
   ngOnInit(): void{
-    this.gservice.isUserLoginPresent();
+    this.gservice.isAdminLoginPresent();
     this.getCategoryList = this.gservice.getCategoryList();
   }
 
@@ -102,19 +102,20 @@ export class AdminAdditemComponent {
         alert("Item updated sucessfully");
         this.router.navigate(["/admin/itemlist"]);
       }
-    }, err => {
+    }, (err: any) => {
       console.log("Error  ", err);
       alert("Something going wrong!! Please try again");
     })
     }else{
       console.log("=======>", body);
-      this.gservice.addItem(body).pipe(take(1)).subscribe((res: any) => {
+      // For demo purposes, using vendorId = 1 (you should get this from admin login)
+      this.gservice.addItem(body, 1).pipe(take(1)).subscribe((res: any) => {
         console.log("*****", res);
         if (res && res?.itemId) {
           alert("Item added sucessfully");
           this.router.navigate(["/admin/itemlist"]);
         }
-      }, err => {
+      }, (err: any) => {
         console.log("Error  ", err);
         alert("Something going wrong!! Please try again");
       })

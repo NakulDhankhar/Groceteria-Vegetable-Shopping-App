@@ -2,44 +2,45 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
+import { environment } from '../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class GroceteriaService {
-  url: string = 'http://localhost:8080';
+  url: string = environment.apiUrl;
 
 
-  //CATEGORY SECTION
+  //CATEGORY SECTION - Updated to match backend enum values
   category: any=[{
-    name: "VEGETABLES", value: 0
+    name: "VEGETABLES", value: "VEGETABLES"
   }, 
   {
-    name: "FRUITS" , value: 1
+    name: "FRUITS" , value: "FRUITS"
   },
   {
-    name: "DAIRYPRODUCTS", value: 2
+    name: "DAIRYPRODUCTS", value: "DAIRYPRODUCTS"
   },
   {
-    name: "MEAT", value: 3
+    name: "MEAT", value: "MEAT"
   },
   {
-    name: "GRAINSANDOILS", value: 4
+    name: "GRAINSANDOILS", value: "GRAINSANDOILS"
   },
   {
-    name: "SPICESANDSEASONINGS", value: 5
+    name: "SPICESANDSEASONINGS", value: "SPICESANDSEASONINGS"
   },
   {
-    name: "BAKINGINGREDIENTS", value: 6
+    name: "BAKINGINGREDIENTS", value: "BAKINGINGREDIENTS"
   },
   {
-    name: "CONDIMENTS", value: 7
+    name: "CONDIMENTS", value: "CONDIMENTS"
   },
   {
-    name: "SNACKS", value: 8
+    name: "SNACKS", value: "SNACKS"
   },
   {
-    name: "SKINCARE", value: 9 
+    name: "SKINCARE", value: "SKINCARE"
   }]
 
   constructor(
@@ -55,7 +56,7 @@ export class GroceteriaService {
 
   /*customer login*/
   userSignIn(body: any): Observable<any>{
-    return this.http.post(this.url + "/users/api/login", body);
+    return this.http.post(this.url + "/users/login", body);
   }
 
   // once we logged in that time we are storing customer id into token
@@ -135,55 +136,55 @@ export class GroceteriaService {
 
 
   //METHODS 
-  //@RequestMapping("/item")
-  //@PostMapping("/additems")
-  addItem(body: any): Observable<any>{
-    return this.http.post(this.url + "/item/additems", body);
+  //@RequestMapping("/items")
+  //@PostMapping
+  addItem(body: any, vendorId: any): Observable<any>{
+    return this.http.post(this.url + "/items?vendorId=" + vendorId, body);
   }
-  //@GetMapping("/all")
+  //@GetMapping
   getItemlist(): Observable<any>{
-    return this.http.get(this.url + "/item");
+    return this.http.get(this.url + "/items");
   }
 
   //@DeleteMapping("{itemId}")
   deleteItem(id: any): Observable<any>{
-    return this.http.delete(this.url + "/item/" +id);
+    return this.http.delete(this.url + "/items/" +id);
   }
 
-  //@GetMapping("/items/{itemId}")
+  //@GetMapping("/{itemId}")
   getItemById(id: any): Observable<any>{
-    return this.http.get(this.url + "/item/items/"+id);
+    return this.http.get(this.url + "/items/"+id);
   }
 
   //@PutMapping("{itemId}")
   editItem(body: any, id: any): Observable<any>{
-    return this.http.put(this.url + "/item/" +id, body);
+    return this.http.put(this.url + "/items/" +id, body);
   }
 
 
   //CART PART
   //@RequestMapping("/cart")
-  //@PostMapping("{userId}/{itemId}")
-  addToCart(body: any, pid: any, cid: any): Observable<any>{
-    return this.http.post(this.url+"/cart/"+cid+"/"+pid,body);
+  //@PostMapping
+  addToCart(body: any, itemId: any, userId: any): Observable<any>{
+    return this.http.post(this.url+"/cart?itemId="+itemId+"&userId="+userId, body);
   }
 
 
   //@RequestMapping("/users")
-  //@GetMapping("user/{id}")
+  //@GetMapping("/{userId}")
   getUserById(id:any):Observable<any> {
-    return this.http.get(this.url + "/users/user/"+id);
+    return this.http.get(this.url + "/users/"+id);
   }
   
-  //@GetMapping("/list")
+  //@GetMapping
   cartList():Observable<any>{
-    return this.http.get(this.url+"/cart/list");
+    return this.http.get(this.url+"/cart");
   }
 
   //@RequestMapping("/orders")
-  //@PostMapping("/{userId}/{cartId}")
-  placeOrder(cid:any,cartid:any,body:any):Observable<any> {
-    return this.http.post(this.url + "/orders/"+cid+"/"+cartid, body);
+  //@PostMapping
+  placeOrder(body:any):Observable<any> {
+    return this.http.post(this.url + "/orders", body);
   }
 
   //@DeleteMapping("/{cartId}")
@@ -192,7 +193,7 @@ export class GroceteriaService {
   }
 
   orderList(id:any):Observable<any>{
-    return this.http.get(this.url+"/orders/"+id);
+    return this.http.get(this.url+"/orders/user/"+id);
   }
 
   getCategoryList(): any {
@@ -200,55 +201,59 @@ export class GroceteriaService {
   }
 
   //PAYMENT PART
-  //@RequestMapping("/payment")
-  //@PostMapping("{orderId}/{userId}")
-  addPayment(body:any,orderid:any,cid:any):Observable<any> {
-    return this.http.post(this.url + "/payment/"+orderid+"/"+cid, body);
+  //@RequestMapping("/payments")
+  //@PostMapping
+  addPayment(body:any):Observable<any> {
+    return this.http.post(this.url + "/payments", body);
   }
 
-  //@PostMapping("/forgotpassword")
+  //@PostMapping("/forgot-password")
   forgotPassword(body: any):Observable<any> {
-    return this.http.post(this.url + "/users/forgotpassword", body);
+    return this.http.post(this.url + "/users/forgot-password", body);
   }
 
   updateUserInformation(body: any):Observable<any> {
-    return this.http.put(this.url + "/users/user/"+body?.userId, body);
+    return this.http.put(this.url + "/users/"+body?.userId, body);
   }
 
   changePassword(uid: any,password:any):Observable<any> {
     return this.http.post(this.url + "/users/"+uid+"/"+password,{});
   }
 
-  //@GetMapping("/items/{itemId}")
-  getItemByCategory(cid: any, offset: any, limit: any):Observable<any>{
-    return this.http.get(this.url+"/item/" + cid + "/"+ offset + "/" + limit);
+  //@GetMapping("/category/{category}/paged")
+  getItemByCategory(cid: any, pageNo: any, pageSize: any):Observable<any>{
+    return this.http.get(this.url+"/items/category/" + cid + "/paged?pageNo=" + pageNo + "&pageSize=" + pageSize);
   }
   
-  getAllItems(offset: any, limit: any):Observable<any>{
-    return this.http.get(this.url+"/item/" +  offset + "/" + limit);
+  getAllItems(pageNo: any, pageSize: any):Observable<any>{
+    return this.http.get(this.url+"/items/paged?pageNo=" + pageNo + "&pageSize=" + pageSize);
+  }
+
+  // Get all items without pagination (for admin item list)
+  getAllItemsList():Observable<any>{
+    return this.http.get(this.url+"/items");
   }
 
   getAllorderList():Observable<any>{
     return this.http.get(this.url+"/orders");
   }
 
-  //@PostMapping("/addOrder/{userId}")
+  //@PostMapping
   placeOrderItem(cid:any, body:any):Observable<any>{
-    return this.http.post(this.url + "/orders/addOrder/"+cid, body);
+    return this.http.post(this.url + "/orders?userId="+cid, body);
   }
 
-  //@GetMapping({"/createTransaction/{amount}"})
-  addPaymentOfOrder(amount: any):Observable<any> {
-    return this.http.get(this.url + "/orders/createTransaction/"+amount);
+  //@PostMapping
+  addPaymentOfOrder(body: any):Observable<any> {
+    return this.http.post(this.url + "/payments", body);
   }
 
-  //@RequestMapping("/item")
-  //@GetMapping("/ItemSearch/{keyword}/{pageNo}/{pageSize}")
+  //@GetMapping("/search")
   searchItemByName(keyword: any, pageNo: any, pageSize: any):Observable<any> {
-    return this.http.get(this.url + `/item/ItemSearch/${keyword}/${pageNo}/${pageSize}`);
+    return this.http.get(this.url + `/items/search?keyword=${keyword}&pageNo=${pageNo}&pageSize=${pageSize}`);
   }
 
   deleteCartByQuanity(id :any, quantity: any):Observable<any> {
-    return this.http.delete(`${this.url}/cart/${id}/${quantity}`);
+    return this.http.put(`${this.url}/cart/${id}/quantity?quantity=${quantity}`, {});
   }
 }

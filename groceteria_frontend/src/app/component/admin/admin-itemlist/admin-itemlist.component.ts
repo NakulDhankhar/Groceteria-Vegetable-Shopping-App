@@ -24,7 +24,7 @@ export class AdminItemlistComponent {
     private router: Router
   )
   {
-    this.gservice.isUserLoginPresent();
+    this.gservice.isAdminLoginPresent();
     this.getItemList(true);
 
   }
@@ -35,28 +35,28 @@ export class AdminItemlistComponent {
   }
 
   getItemList(isAllItem: boolean = false): void{
-    let item: any = this.gservice.getAllItems(this.offset -1 < 0 ? 0 : this.offset -1, this.pageSize);
-    console.log("+++++++", item);
-    if (!isAllItem){
+    let item: any;
+    if (isAllItem) {
+      item = this.gservice.getAllItemsList();
+    } else {
       item = this.gservice.getItemByCategory(this.category, this.offset -1 < 0 ? 0 : this.offset -1, this.pageSize);
-      // console.log("******", isAllItem);
     }
 
     item.pipe(take(1)).subscribe((res: any) => {
-
-      if(res && res?.item && Array.isArray(res?.item)){
-
-        this.itemList = res?.item;
-        this.allItemList = res?.item;
-        this.totalItem = res?.totalItem;
+      if(res && Array.isArray(res)){
+        this.itemList = res;
+        this.allItemList = res;
+        this.totalItem = res.length;
+      } else if(res && res?.content && Array.isArray(res?.content)){
+        // Handle paginated response
+        this.itemList = res?.content;
+        this.allItemList = res?.content;
+        this.totalItem = res?.totalElements || res?.content.length;
       }
     }, (err: any) => {
-
-      console.log("Error");
+      console.log("Error", err);
       console.log("It is not working");
-
-    } );
-    
+    });
   }
 
  

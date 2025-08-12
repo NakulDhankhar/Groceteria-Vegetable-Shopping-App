@@ -12,11 +12,11 @@ export class AdminHomeComponent implements OnInit{
   constructor(
     private gservice: GroceteriaService
   ) {
-    if (this.gservice.getUserName() !== null) {
-      this.userName = this.gservice.getUserName();
+    if (this.gservice.getAdminName() !== null) {
+      this.userName = this.gservice.getAdminName();
       console.log("*******",this.userName);
     }
-    this.gservice.isUserLoginPresent();
+    this.gservice.isAdminLoginPresent();
   }
 
   ngOnInit(): void {
